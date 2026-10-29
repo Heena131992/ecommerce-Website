@@ -1,0 +1,264 @@
+const menuItems = document.querySelectorAll("#menuitems .a");
+const sections = document.querySelectorAll(".page");
+
+// Menu click
+menuItems.forEach((item) => {
+  item.addEventListener("click", () => {
+
+    // Active menu
+    menuItems.forEach((i) => i.classList.remove("active"));
+    item.classList.add("active");
+
+    // Hide all pages
+    sections.forEach((section) => {
+      section.style.display = "none";
+    });
+
+    // Show selected page
+    const page = item.getAttribute("data-page");
+    document.getElementById(page).style.display = "block";
+  });
+});
+
+
+// Mobile menu
+const Menuitems = document.getElementById("menuitems");
+Menuitems.style.maxHeight = "0px";
+
+function menutoggle() {
+  if (Menuitems.style.maxHeight === "0px") {
+    Menuitems.style.maxHeight = "500px";
+  } else {
+    Menuitems.style.maxHeight = "0px";
+  }
+}
+
+// --- Responsive Mobile Navbar Toggle ---
+var menuitems = document.getElementById("menuitems");
+if (menuitems) {
+  menuitems.style.maxHeight = "0px";
+}
+
+function menutoggle() {
+  if (menuitems.style.maxHeight === "0px") {
+    menuitems.style.maxHeight = "200px";
+  } else {
+    menuitems.style.maxHeight = "0px";
+  }
+}
+
+// --- Cart Management Logic ---
+let cart = JSON.parse(localStorage.getItem('redstore_cart')) || [];
+
+const cartBtn = document.getElementById('cart-btn');
+const closeCartBtn = document.getElementById('close-cart');
+const cartDrawer = document.getElementById('cart-drawer');
+const cartOverlay = document.getElementById('cart-overlay');
+const cartItemsContainer = document.getElementById('cart-items');
+const cartCount = document.getElementById('cart-count');
+const cartTotalPrice = document.getElementById('cart-total-price');
+
+// Open / Close Drawer
+cartBtn.addEventListener('click', () => toggleDrawer(true));
+closeCartBtn.addEventListener('click', () => toggleDrawer(false));
+cartOverlay.addEventListener('click', () => toggleDrawer(false));
+
+function toggleDrawer(isOpen) {
+  cartDrawer.classList.toggle('active', isOpen);
+  cartOverlay.classList.toggle('active', isOpen);
+}
+
+// Add Item
+function addToCart(id, name, price, image) {
+  const existing = cart.find(item => item.id === id);
+  if (existing) {
+    existing.quantity += 1;
+  } else {
+    cart.push({ id, name, price, image, quantity: 1 });
+  }
+  updateCartUI();
+  toggleDrawer(true);
+}
+
+// Change Quantity (+ / -)
+function updateQty(id, change) {
+  const item = cart.find(i => i.id === id);
+  if (item) {
+    item.quantity += change;
+    if (item.quantity <= 0) {
+      cart = cart.filter(i => i.id !== id);
+    }
+  }
+  updateCartUI();
+}
+
+// Refresh UI & LocalStorage
+function updateCartUI() {
+  localStorage.setItem('redstore_cart', JSON.stringify(cart));
+
+  const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  cartCount.textContent = totalCount;
+  cartTotalPrice.textContent = `$${totalAmount.toFixed(2)}`;
+
+  if (cart.length === 0) {
+    cartItemsContainer.innerHTML = '<p style="color:#888; text-align:center; margin-top:40px;">Your cart is currently empty.</p>';
+    return;
+  }
+
+  cartItemsContainer.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <img src="${item.image}" alt="${item.name}">
+      <div class="cart-item-info">
+        <h4>${item.name}</h4>
+        <p>$${item.price.toFixed(2)} x ${item.quantity}</p>
+        <div class="qty-box">
+          <button onclick="updateQty(${item.id}, -1)">-</button>
+          <span>${item.quantity}</span>
+          <button onclick="updateQty(${item.id}, 1)">+</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Backend Checkout API Call
+async function checkout() {
+  if (cart.length === 0) {
+    alert('Aapka cart empty hai!');
+    return;
+  }
+
+  try {
+    const response = await fetch('http://localhost:5000/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items: cart })
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      alert(`Order Successful!\nOrder ID: ${data.orderId}\nTotal Amount: $${data.totalAmount}`);
+      cart = [];
+      updateCartUI();
+      toggleDrawer(false);
+    } else {
+      alert('Order failed: ' + data.message);
+    }
+  } catch (err) {
+    alert('Backend server se connect nahi ho paya (Make sure server.js is running).');
+  }
+}
+
+// First Render on Load
+updateCartUI();
+
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+// Frontend aur Backend connect karne ke liye CORS zaroori hai
+app.use(cors());
+app.use(express.json());
+
+// Checkout API Endpoint
+app.post('/api/checkout', (req, res) => {
+  const { items } = req.body;
+
+  if (!items || items.length === 0) {
+    return res.status(400).json({ success: false, message: 'Cart is empty.' });
+  }
+
+  const totalAmount = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+  console.log('--- Order Received! ---');
+  console.log(items);
+
+  return res.json({
+    success: true,
+    message: 'Order placed successfully!',
+    orderId: 'RED-' + Math.floor(100000 + Math.random() * 900000),
+    totalAmount: totalAmount.toFixed(2)
+  });
+});
+
+const PORT = 5000;
+app.listen(PORT, () => {
+  console.log(`Backend running on http://localhost:${PORT}`);
+});
+
+const LoginForm = document.getElementById("LoginForm");
+const RegForm = document.getElementById("RegForm");
+const Indicator = document.getElementById("indicator");
+
+// Switch Tabs (Login / Register)
+function showRegister() {
+  RegForm.style.transform = "translateX(0px)";
+  LoginForm.style.transform = "translateX(0px)";
+  Indicator.style.transform = "translateX(100px)";
+}
+
+function showLogin() {
+  RegForm.style.transform = "translateX(300px)";
+  LoginForm.style.transform = "translateX(300px)";
+  Indicator.style.transform = "translateX(0px)";
+}
+
+// Start with Login Form Visible
+showLogin();
+
+// API: Handle Register
+async function handleRegister(e) {
+  e.preventDefault();
+  const username = document.getElementById('regUsername').value;
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+
+  try {
+    const res = await fetch('http://localhost:5000/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, email, password })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      alert('Registration Successful! Please login.');
+      document.getElementById('RegForm').reset();
+      showLogin();
+    } else {
+      alert(data.message || 'Registration failed.');
+    }
+  } catch (err) {
+    alert('Server error: Make sure server.js is running.');
+  }
+}
+
+// API: Handle Login
+async function handleLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('loginUsername').value;
+  const password = document.getElementById('loginPassword').value;
+
+  try {
+    const res = await fetch('http://localhost:5000/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      alert(`Welcome back, ${data.user.username}!`);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      window.location.href = 'index.html';
+    } else {
+      alert(data.message || 'Login failed.');
+    }
+  } catch (err) {
+    alert('Server error: Make sure server.js is running.');
+  }
+}
+
