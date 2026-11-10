@@ -256,6 +256,247 @@ p{
   background: radial-gradient(#fff, #ffd6d6);
 }
 
+.add-btn {
+  background-color: #ff523b;
+  color: white;
+  border: 2px solid transparent;
+  padding: 8px 18px;
+  border-radius: 4px; /* Slightly rounded corners */
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.add-btn:hover {
+  background-color: transparent;
+  color: #ff523b;
+  border-color: #ff523b; /* Hover par border highlight hogi */
+}
+/* --- Cart Drawer & Overlay Modern Styling --- */
+.cart-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px); /* Background ko halka blur karega */
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 998;
+}
+
+.cart-overlay.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 400px;
+  height: 100%;
+  background: #ffffff;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cart-drawer.active {
+  right: 0;
+}
+
+/* Cart Header */
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  background: #fdfdfd;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.cart-header h2 {
+  font-size: 20px;
+  color: #222;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: #f1f1f1;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  color: #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.close-btn:hover {
+  background: #ff523b;
+  color: #fff;
+}
+
+/* Cart Items Container */
+.cart-items {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 25px;
+}
+
+/* Individual Cart Item Card */
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+  transition: transform 0.2s;
+}
+
+.cart-item:hover {
+  border-color: #ddd;
+}
+
+.cart-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #eee;
+}
+
+.cart-item-info {
+  flex: 1;
+  margin-left: 15px;
+}
+
+.cart-item-info h4 {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.cart-item-info p {
+  font-size: 13px;
+  color: #ff523b;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* Quantity + / - Controls */
+.cart-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: fit-content;
+  padding: 2px 8px;
+}
+
+.cart-item-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+  padding: 0 4px;
+}
+
+.cart-item-actions button:hover {
+  color: #ff523b;
+}
+
+.cart-item-actions span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  min-width: 15px;
+  text-align: center;
+}
+
+/* Trash / Delete Button */
+.remove-item {
+  background: #ffeeed;
+  color: #ff523b;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-left: 10px;
+}
+
+.remove-item:hover {
+  background: #ff523b;
+  color: #fff;
+}
+
+/* Cart Footer & Total */
+.cart-footer {
+  padding: 20px 25px;
+  background: #fdfdfd;
+  border-top: 1px solid #eaeaea;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 15px;
+}
+
+.cart-total span:last-child {
+  font-size: 25px;
+  font-weight: bold;
+  color: #222;
+}
+
+.checkout-btn {
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff523b, #e03e28);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(255, 82, 59, 30%);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.checkout-btn:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
 .form-container {
   background: #ffffff;
   width: 300px;
